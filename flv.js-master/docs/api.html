@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Interfaces</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="flvjs-api">flv.js API</h1>
+<p>This document use TypeScript-like definitions to describe interfaces.</p>
+<h2 id="interfaces">Interfaces</h2>
+<p>flv.js exports all the interfaces through <code>flvjs</code> object which exposed in global context <code>window</code>.</p>
+<p><code>flvjs</code> object can also be accessed by require or ES6 import.</p>
+<p>Functions:</p>
+<ul>
+<li><a href="#flvjscreateplayer">flvjs.createPlayer()</a></li>
+<li><a href="#flvjsissupported">flvjs.isSupported()</a></li>
+<li><a href="#flvjsgetfeaturelist">flvjs.getFeatureList()</a></li>
+</ul>
+<p>Classes:</p>
+<ul>
+<li><a href="#flvjsflvplayer">flvjs.FlvPlayer</a></li>
+<li><a href="#flvjsnativeplayer">flvjs.NativePlayer</a></li>
+<li><a href="#flvjsloggingcontrol">flvjs.LoggingControl</a></li>
+</ul>
+<p>Enums:</p>
+<ul>
+<li><a href="#flvjsevents">flvjs.Events</a></li>
+<li><a href="#flvjserrortypes">flvjs.ErrorTypes</a></li>
+<li><a href="#flvjserrordetails">flvjs.ErrorDetails</a></li>
+</ul>
+<h3 id="flvjscreateplayer">flvjs.createPlayer()</h3>
+<pre><code class="language-js"><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createPlayer</span>(<span class="hljs-params">mediaDataSource: MediaDataSource, config?: Config</span>): <span class="hljs-title">Player</span>;
+</span></div></code></pre>
+<p>Create a player instance according to <code>type</code> field indicated in <code>mediaDataSource</code>, with optional <code>config</code>.</p>
+<h3 id="mediadatasource">MediaDataSource</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td><code>string</code></td>
+<td>Indicates media type, <code>'flv'</code> or <code>'mp4'</code></td>
+</tr>
+<tr>
+<td><code>isLive?</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether the data source is a <strong>live stream</strong></td>
+</tr>
+<tr>
+<td><code>cors?</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether to enable CORS for http fetching</td>
+</tr>
+<tr>
+<td><code>withCredentials?</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether to do http fetching with cookies</td>
+</tr>
+<tr>
+<td><code>hasAudio?</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether the stream has audio track</td>
+</tr>
+<tr>
+<td><code>hasVideo?</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether the stream has video track</td>
+</tr>
+<tr>
+<td><code>duration?</code></td>
+<td><code>number</code></td>
+<td>Indicates total media duration, in <strong>milliseconds</strong></td>
+</tr>
+<tr>
+<td><code>filesize?</code></td>
+<td><code>number</code></td>
+<td>Indicates total file size of media file, in bytes</td>
+</tr>
+<tr>
+<td><code>url?</code></td>
+<td><code>string</code></td>
+<td>Indicates media URL, can be starts with <code>'https(s)'</code> or <code>'ws(s)'</code> (WebSocket)</td>
+</tr>
+<tr>
+<td><code>segments?</code></td>
+<td><code>Array&lt;MediaSegment&gt;</code></td>
+<td>Optional field for multipart playback, see <strong>MediaSegment</strong></td>
+</tr>
+</tbody>
+</table>
+<p>If <code>segments</code> field exists, transmuxer will treat this <code>MediaDataSource</code> as a <strong>multipart</strong> source.</p>
+<p>In multipart mode, <code>duration</code> <code>filesize</code> <code>url</code> field in <code>MediaDataSource</code> structure will be ignored.</p>
+<h3 id="mediasegment">MediaSegment</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>duration</code></td>
+<td><code>number</code></td>
+<td>Required field, indicates segment duration in <strong>milliseconds</strong></td>
+</tr>
+<tr>
+<td><code>filesize?</code></td>
+<td><code>number</code></td>
+<td>Optional field, indicates segment file size in bytes</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td><code>string</code></td>
+<td>Required field, indicates segment file URL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="config">Config</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enableWorker?</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Enable separated thread for transmuxing (unstable for now)</td>
+</tr>
+<tr>
+<td><code>enableStashBuffer?</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Enable IO stash buffer. Set to false if you need realtime (minimal latency) for live stream playback, but may stalled if there's network jittering.</td>
+</tr>
+<tr>
+<td><code>stashInitialSize?</code></td>
+<td><code>number</code></td>
+<td><code>384KB</code></td>
+<td>Indicates IO stash buffer initial size. Default is <code>384KB</code>. Indicate a suitable size can improve video load/seek time.</td>
+</tr>
+<tr>
+<td><code>isLive?</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Same to <code>isLive</code> in <strong>MediaDataSource</strong>, ignored if has been set in MediaDataSource structure.</td>
+</tr>
+<tr>
+<td><code>lazyLoad?</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Abort the http connection if there's enough data for playback.</td>
+</tr>
+<tr>
+<td><code>lazyLoadMaxDuration?</code></td>
+<td><code>number</code></td>
+<td><code>3 * 60</code></td>
+<td>Indicates how many seconds of data to be kept for <code>lazyLoad</code>.</td>
+</tr>
+<tr>
+<td><code>lazyLoadRecoverDuration?</code></td>
+<td><code>number</code></td>
+<td><code>30</code></td>
+<td>Indicates the <code>lazyLoad</code> recover time boundary in seconds.</td>
+</tr>
+<tr>
+<td><code>deferLoadAfterSourceOpen?</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Do load after MediaSource <code>sourceopen</code> event triggered. On Chrome, tabs which be opened in background may not trigger <code>sourceopen</code> event until switched to that tab.</td>
+</tr>
+<tr>
+<td><code>autoCleanupSourceBuffer</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Do auto cleanup for SourceBuffer</td>
+</tr>
+<tr>
+<td><code>autoCleanupMaxBackwardDuration</code></td>
+<td><code>number</code></td>
+<td><code>3 * 60</code></td>
+<td>When backward buffer duration exceeded this value (in seconds), do auto cleanup for SourceBuffer</td>
+</tr>
+<tr>
+<td><code>autoCleanupMinBackwardDuration</code></td>
+<td><code>number</code></td>
+<td><code>2 * 60</code></td>
+<td>Indicates the duration in seconds to reserve for backward buffer when doing auto cleanup.</td>
+</tr>
+<tr>
+<td><code>fixAudioTimestampGap</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Fill silent audio frames to avoid a/v unsync when detect large audio timestamp gap.</td>
+</tr>
+<tr>
+<td><code>accurateSeek?</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Accurate seek to any frame, not limited to video IDR frame, but may a bit slower. Available on <code>Chrome &gt; 50</code>, <code>FireFox</code> and <code>Safari</code>.</td>
+</tr>
+<tr>
+<td><code>seekType?</code></td>
+<td><code>string</code></td>
+<td><code>'range'</code></td>
+<td><code>'range'</code> use range request to seek, or <code>'param'</code> add params into url to indicate request range.</td>
+</tr>
+<tr>
+<td><code>seekParamStart?</code></td>
+<td><code>string</code></td>
+<td><code>'bstart'</code></td>
+<td>Indicates seek start parameter name for <code>seekType = 'param'</code></td>
+</tr>
+<tr>
+<td><code>seekParamEnd?</code></td>
+<td><code>string</code></td>
+<td><code>'bend'</code></td>
+<td>Indicates seek end parameter name for <code>seekType = 'param'</code></td>
+</tr>
+<tr>
+<td><code>rangeLoadZeroStart?</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Send <code>Range: bytes=0-</code> for first time load if use Range seek</td>
+</tr>
+<tr>
+<td><code>customSeekHandler?</code></td>
+<td><code>object</code></td>
+<td><code>undefined</code></td>
+<td>Indicates a custom seek handler</td>
+</tr>
+<tr>
+<td><code>reuseRedirectedURL?</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Reuse 301/302 redirected url for subsequence request like seek, reconnect, etc.</td>
+</tr>
+<tr>
+<td><code>referrerPolicy?</code></td>
+<td><code>string</code></td>
+<td><code>no-referrer-when-downgrade</code></td>
+<td>Indicates the <a href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy">Referrer Policy</a> when using FetchStreamLoader</td>
+</tr>
+<tr>
+<td><code>headers?</code></td>
+<td><code>object</code></td>
+<td><code>undefined</code></td>
+<td>Indicates additional headers that will be added to request</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flvjsissupported">flvjs.isSupported()</h3>
+<pre><code class="language-js"><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isSupported</span>(<span class="hljs-params"></span>): <span class="hljs-title">boolean</span>;
+</span></div></code></pre>
+<p>Return <code>true</code> if basic playback can works on your browser.</p>
+<h3 id="flvjsgetfeaturelist">flvjs.getFeatureList()</h3>
+<pre><code class="language-js"><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFeatureList</span>(<span class="hljs-params"></span>): <span class="hljs-title">FeatureList</span>;
+</span></div></code></pre>
+<p>Return a <code>FeatureList</code> object which has following details:</p>
+<h4 id="featurelist">FeatureList</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mseFlvPlayback</code></td>
+<td><code>boolean</code></td>
+<td>Same to <code>flvjs.isSupported()</code>, indicates whether basic playback works on your browser.</td>
+</tr>
+<tr>
+<td><code>mseLiveFlvPlayback</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether HTTP FLV live stream can works on your browser.</td>
+</tr>
+<tr>
+<td><code>networkStreamIO</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether the network loader is streaming.</td>
+</tr>
+<tr>
+<td><code>networkLoaderName</code></td>
+<td><code>string</code></td>
+<td>Indicates the network loader type name.</td>
+</tr>
+<tr>
+<td><code>nativeMP4H264Playback</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether your browser support H.264 MP4 video file natively.</td>
+</tr>
+<tr>
+<td><code>nativeWebmVP8Playback</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether your browser support WebM VP8 video file natively.</td>
+</tr>
+<tr>
+<td><code>nativeWebmVP9Playback</code></td>
+<td><code>boolean</code></td>
+<td>Indicates whether your browser support WebM VP9 video file natively.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flvjsflvplayer">flvjs.FlvPlayer</h3>
+<pre><code class="language-typescript"><div><span class="hljs-keyword">interface</span> FlvPlayer <span class="hljs-keyword">extends</span> Player {}
+</div></code></pre>
+<p>FLV player which implements the <code>Player</code> interface. Can be created by <code>new</code> operator directly.</p>
+<h3 id="flvjsnativeplayer">flvjs.NativePlayer</h3>
+<pre><code class="language-typescript"><div><span class="hljs-keyword">interface</span> NativePlayer <span class="hljs-keyword">extends</span> Player {}
+</div></code></pre>
+<p>Player wrapper for browser's native player (HTMLVideoElement) without MediaSource src, which implements the <code>Player</code> interface. Useful for singlepart <strong>MP4</strong> file playback.</p>
+<h3 id="interface-player-abstract">interface Player (abstract)</h3>
+<pre><code class="language-typescript"><div><span class="hljs-keyword">interface</span> Player {
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">mediaDataSource: MediaDataSource, config?: Config</span>): Player;
+    destroy(): <span class="hljs-built_in">void</span>;
+    on(event: <span class="hljs-built_in">string</span>, listener: <span class="hljs-built_in">Function</span>): <span class="hljs-built_in">void</span>;
+    off(event: <span class="hljs-built_in">string</span>, listener: <span class="hljs-built_in">Function</span>): <span class="hljs-built_in">void</span>;
+    attachMediaElement(mediaElement: HTMLMediaElement): <span class="hljs-built_in">void</span>;
+    detachMediaElement(): <span class="hljs-built_in">void</span>;
+    load(): <span class="hljs-built_in">void</span>;
+    unload(): <span class="hljs-built_in">void</span>;
+    play(): <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt;;
+    pause(): <span class="hljs-built_in">void</span>;
+    <span class="hljs-keyword">type</span>: <span class="hljs-built_in">string</span>;
+    buffered: TimeRanges;
+    duration: <span class="hljs-built_in">number</span>;
+    volume: <span class="hljs-built_in">number</span>;
+    muted: <span class="hljs-built_in">boolean</span>;
+    currentTime: <span class="hljs-built_in">number</span>;
+    mediaInfo: <span class="hljs-built_in">Object</span>;
+    statisticsInfo: <span class="hljs-built_in">Object</span>;
+}
+</div></code></pre>
+<h3 id="flvjsloggingcontrol">flvjs.LoggingControl</h3>
+<p>A global interface which include several static getter/setter to set flv.js logcat verbose level.</p>
+<pre><code class="language-typescript"><div><span class="hljs-keyword">interface</span> LoggingControl {
+    forceGlobalTag: <span class="hljs-built_in">boolean</span>;
+    globalTag: <span class="hljs-built_in">string</span>;
+    enableAll: <span class="hljs-built_in">boolean</span>;
+    enableDebug: <span class="hljs-built_in">boolean</span>;
+    enableVerbose: <span class="hljs-built_in">boolean</span>;
+    enableInfo: <span class="hljs-built_in">boolean</span>;
+    enableWarn: <span class="hljs-built_in">boolean</span>;
+    enableError: <span class="hljs-built_in">boolean</span>;
+    getConfig(): <span class="hljs-built_in">Object</span>;
+    applyConfig(config: <span class="hljs-built_in">Object</span>): <span class="hljs-built_in">void</span>;
+    addLogListener(listener: <span class="hljs-built_in">Function</span>): <span class="hljs-built_in">void</span>;
+    removeLogListener(listener: <span class="hljs-built_in">Function</span>): <span class="hljs-built_in">void</span>;
+}
+</div></code></pre>
+<h3 id="flvjsevents">flvjs.Events</h3>
+<p>A series of constants that can be used with <code>Player.on()</code> / <code>Player.off()</code>. They require the prefix <code>flvjs.Events</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ERROR</td>
+<td>An error occurred by any cause during the playback</td>
+</tr>
+<tr>
+<td>LOADING_COMPLETE</td>
+<td>The input MediaDataSource has been completely buffered to end</td>
+</tr>
+<tr>
+<td>RECOVERED_EARLY_EOF</td>
+<td>An unexpected network EOF occurred during buffering but automatically recovered</td>
+</tr>
+<tr>
+<td>MEDIA_INFO</td>
+<td>Provides technical information of the media like video/audio codec, bitrate, etc.</td>
+</tr>
+<tr>
+<td>METADATA_ARRIVED</td>
+<td>Provides metadata which FLV file(stream) can contain with an &quot;onMetaData&quot; marker.</td>
+</tr>
+<tr>
+<td>SCRIPTDATA_ARRIVED</td>
+<td>Provides scriptdata (OnCuePoint / OnTextData) which FLV file(stream) can contain.</td>
+</tr>
+<tr>
+<td>STATISTICS_INFO</td>
+<td>Provides playback statistics information like dropped frames, current speed, etc.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flvjserrortypes">flvjs.ErrorTypes</h3>
+<p>The possible errors that can come up during playback. They require the prefix <code>flvjs.ErrorTypes</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NETWORK_ERROR</td>
+<td>Errors related to the network</td>
+</tr>
+<tr>
+<td>MEDIA_ERROR</td>
+<td>Errors related to the media (format error, decode issue, etc)</td>
+</tr>
+<tr>
+<td>OTHER_ERROR</td>
+<td>Any other unspecified error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flvjserrordetails">flvjs.ErrorDetails</h3>
+<p>Provide more verbose explanation for Network and Media errors. They require the prefix <code>flvjs.ErrorDetails</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NETWORK_EXCEPTION</td>
+<td>Related to any other issues with the network; contains a <code>message</code></td>
+</tr>
+<tr>
+<td>NETWORK_STATUS_CODE_INVALID</td>
+<td>Related to an invalid HTTP status code, such as 403, 404, etc.</td>
+</tr>
+<tr>
+<td>NETWORK_TIMEOUT</td>
+<td>Related to timeout request issues</td>
+</tr>
+<tr>
+<td>NETWORK_UNRECOVERABLE_EARLY_EOF</td>
+<td>Related to unexpected network EOF which cannot be recovered</td>
+</tr>
+<tr>
+<td>MEDIA_MSE_ERROR</td>
+<td>Related to MediaSource's error such as decode issue</td>
+</tr>
+<tr>
+<td>MEDIA_FORMAT_ERROR</td>
+<td>Related to any invalid parameters in the media stream</td>
+</tr>
+<tr>
+<td>MEDIA_FORMAT_UNSUPPORTED</td>
+<td>The input MediaDataSource format is not supported by flv.js</td>
+</tr>
+<tr>
+<td>MEDIA_CODEC_UNSUPPORTED</td>
+<td>The media stream contains video/audio codec which is not supported</td>
+</tr>
+</tbody>
+</table>
+
+    </body>
+    </html>
